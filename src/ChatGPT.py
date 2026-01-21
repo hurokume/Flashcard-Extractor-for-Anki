@@ -5,7 +5,7 @@ from openai import OpenAI
 
 class ChatGPT:
 
-    def __init__(self, api_key: str, model: str = "gpt-5-mini") -> None:
+    def __init__(self, api_key: str, model: str = "gpt-5-nano") -> None:
 
         self.client = OpenAI(api_key=api_key)
         self.model = model
@@ -61,7 +61,9 @@ class ChatGPT:
     def estimate_cost_usd(self, response, model: str) -> float:
 
         rates = {
+            "gpt-5": {"in": 1.25, "cached_in": 0.125, "out": 10.00},  # per 1M tokens
             "gpt-5-mini": {"in": 0.25, "cached_in": 0.025, "out": 2.00},  # per 1M tokens
+            "gpt-5-nano": {"in": 0.05, "cached_in": 0.005, "out": 0.40},  # per 1M tokens
         }
         r = rates[model]
 
