@@ -3,6 +3,7 @@ import time
 from tkinter import filedialog
 
 from ChatGPT import ChatGPT
+from ImageProcessing import ImageProcessing as ip
 
 if __name__ == "__main__":
 
@@ -39,28 +40,28 @@ if __name__ == "__main__":
 フォーマット（１単語あたり）:
 [
   {
-    "no": "単語番号．画像1の左上に記載されている",
-    "word": "画像1に含まれる英単語",
-    "word_type": "品詞略．画像1の日本語訳の左側に記載されている",
-    "meaning": "画像1に含まれる日本語訳．赤字で記載されている",
-    "pronunciation": "画像1に含まれる発音記号．画像1の英単語の右側に記載されている",
-    "onepoint": "画像1に含まれるワンポイントアドバイス．存在しない場合は空白文字列．！アイコンの右側に記載されている",
-    "totteoki": "画像1に含まれるとっておきポイント．存在しない場合は空白文字列．猫アイコンの右側に記載されている"
-    "syntax": "画像1に含まれる構文情報．存在しない場合は空白文字列．「構」のアイコンの右側に記載されている",
-    "collocation": "画像1に含まれるコロケーション．存在しない場合は空白文字列．「コ」のアイコンの右側に記載されている"
-    "idiom": "画像1に含まれるイディオム情報．存在しない場合は空白文字列．「イ」のアイコンの右側に記載されている"
-    "derivative": "画像1に含まれる派生語情報．存在しない場合は空白文字列．「派」のアイコンの右側に記載されている"
-    "similar_word": "画像1に含まれる類義語情報．存在しない場合は空白文字列．「類」のアイコンの右側に記載されている"
-    "antinym": "画像1に含まれる反意語情報．存在しない場合は空白文字列．「反」のアイコンの右側に記載されている"
-    "related_word": "画像1に含まれる関連語情報．存在しない場合は空白文字列．「関」のアイコンの右側に記載されている"
-    "example_sentence": "画像2に含まれる例文情報．赤字箇所は英単語に対応しており，強調するために*で囲う．"
-    "example_sentence_meaning": "画像2に含まれる例文の和訳情報．下線部が例文に対応しており，強調するために*で囲う．"
+    "no": "必須．単語番号．画像左の左上に記載されている",
+    "word": "必須．画像左に含まれる英単語",
+    "word_type": "必須．品詞略．画像左の日本語訳の左側に記載されている",
+    "meaning": "必須．画像左に含まれる日本語訳．赤字で記載されている",
+    "pronunciation": "画像左に含まれる発音記号．画像左の英単語の右側に記載されている",
+    "onepoint": "画像左に含まれるワンポイントアドバイス．存在しない場合は空白文字列．！アイコンの右側に記載されている",
+    "totteoki": "画像左に含まれるとっておきポイント．存在しない場合は空白文字列．猫アイコンの右側に記載されている"
+    "syntax": "画像左に含まれる構文情報．存在しない場合は空白文字列．「構」のアイコンの右側に記載されている",
+    "collocation": "画像左に含まれるコロケーション．存在しない場合は空白文字列．「コ」のアイコンの右側に記載されている"
+    "idiom": "画像左に含まれるイディオム情報．存在しない場合は空白文字列．「イ」のアイコンの右側に記載されている"
+    "derivative": "画像左に含まれる派生語情報．存在しない場合は空白文字列．「派」のアイコンの右側に記載されている"
+    "similar_word": "画像左に含まれる類義語情報．存在しない場合は空白文字列．「類」のアイコンの右側に記載されている"
+    "antinym": "画像左に含まれる反意語情報．存在しない場合は空白文字列．「反」のアイコンの右側に記載されている"
+    "related_word": "画像左に含まれる関連語情報．存在しない場合は空白文字列．「関」のアイコンの右側に記載されている"
+    "example_sentence": "必須．画像右に含まれる例文情報．赤字箇所は英単語に対応しており，強調するために*で囲う．"
+    "example_sentence_meaning": "必須．画像右に含まれる例文の和訳情報．下線部が例文に対応しており，強調するために*で囲う．"
   },
     ...
 ]
 """
     print("[INFO]\tSetting flashcard information...")
-    chat_gpt.set_flashcard_info(book=book, part=part, is_double=is_double, prompt=prompt)
+    chat_gpt.set_flashcard_info(book=book, part=part, prompt=prompt)
 
     time_start = time.time()
 
@@ -83,9 +84,11 @@ if __name__ == "__main__":
         else:
             continue
 
-        response = chat_gpt.extract_flashcards(
-            imgs=[img1_data, img2_data] if img2_data else [img1_data]
-        )
+        merged_img_bytes = ip.merge_lr_bytes(img1_data, img2_data)
+
+        response = chat_gpt.extract_flashcards(img=merged_img_bytes)
+
+        print(f"[RESPONSE]\t{response}")
 
         current_time = time.time()
         elapsed_time = current_time - time_start
