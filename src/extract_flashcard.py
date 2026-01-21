@@ -3,7 +3,6 @@ import time
 from tkinter import filedialog
 
 from ChatGPT import ChatGPT
-from ImageProcessing import ImageProcessing as ip
 
 if __name__ == "__main__":
 
@@ -32,7 +31,6 @@ if __name__ == "__main__":
 
     book = "Sample Book"
     part = "Chapter 1"
-    is_double = True
     prompt = """\
 与えられた単語帳のスキャンデータから，\
 以下のフォーマットで単語帳情報を抽出してJSON形式で出力してください．\
@@ -65,35 +63,26 @@ if __name__ == "__main__":
 
     time_start = time.time()
 
-    for i in range(0, num_images, 2):
-        img1_path = images_path[i]
-        img2_path = images_path[i + 1] if i + 1 < num_images else None
+    for i in range(0, num_images):
 
-        img1_filename = os.path.basename(img1_path)
-        img2_filename = os.path.basename(img2_path) if img2_path else "N/A"
+        img_path = images_path[i]
+        img_filename = os.path.basename(img_path)
 
-        print(f"[INFO]\tProcessing images: {img1_filename}, {img2_filename}")
+        print(f"[INFO]\tProcessing images: {i + 1}/{num_images} - {img_filename}")
 
-        with open(img1_path, "rb") as img1_file:
-            img1_data = img1_file.read()
+        with open(img_path, "rb") as img1_file:
+            img_data = img1_file.read()
 
-        img2_data = None
-        if img2_path:
-            with open(img2_path, "rb") as img2_file:
-                img2_data = img2_file.read()
-        else:
-            continue
-
-        merged_img_bytes = ip.merge_lr_bytes(img1_data, img2_data)
-
-        response = chat_gpt.extract_flashcards(img=merged_img_bytes)
+        response = chat_gpt.extract_flashcards(img=img_data)
 
         print(f"[RESPONSE]\t{response}")
 
         current_time = time.time()
         elapsed_time = current_time - time_start
-        estimated_total_time = (elapsed_time / (i + 2)) * num_images
+        estimated_total_time = (elapsed_time / (i + 1)) * num_images
+        estimated_remaining_time = estimated_total_time - elapsed_time
+
         print(
             f"[INFO]\tElapsed time: {elapsed_time:.0f} seconds (Estimated remaining time: "
-            f"{(elapsed_time / 60):.2f} minutes)"
+            f"{(estimated_remaining_time / 60):.2f} minutes)"
         )

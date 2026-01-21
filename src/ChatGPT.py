@@ -52,10 +52,9 @@ class ChatGPT:
         )
 
         ugage = self.estimate_cost_usd(response, model=self.model)
-        print(f"[INFO]\tEstimated cost for this request: ${ugage:.3f} Yen")
+        print(f"[INFO]\tEstimated cost for this request: {ugage:.3f} Yen")
 
-        output = getattr(response, "output", None)
-        output_text = getattr(output, "output_text", "") if output else ""
+        output_text = getattr(response, "output_text", None)
 
         return output_text
 
