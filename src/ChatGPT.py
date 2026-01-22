@@ -1,4 +1,5 @@
 import base64
+import json
 
 from openai import OpenAI
 
@@ -16,6 +17,20 @@ class ChatGPT:
         self.flashcard["book"] = book
         self.flashcard["part"] = part
         self.flashcard["prompt"] = prompt
+
+    @staticmethod
+    def load_config_json(config_path: str) -> dict:
+        with open(config_path, "r", encoding="utf-8") as f:
+            cfg = json.load(f)
+
+        required = ["book", "part", "prompt", "columns"]
+        missing = [k for k in required if k not in cfg]
+        if missing:
+            raise ValueError(f"Config JSON missing keys: {missing}")
+
+        # optional
+        cfg.setdefault("output_root_key", "flashcards")
+        return cfg
 
     def extract_flashcards(self, img=str) -> str:
 
@@ -81,4 +96,5 @@ class ChatGPT:
             + (out_tok / 1_000_000) * r["out"]
         )
 
+        return usd * 158.16  # JPY conversion
         return usd * 158.16  # JPY conversion

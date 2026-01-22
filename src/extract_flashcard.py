@@ -45,61 +45,32 @@ if __name__ == "__main__":
 
     chat_gpt = ChatGPT(api_key=api_key)
 
-    book = "Sample Book"
-    part = "Chapter 1"
-    prompt = """\
-与えられた単語帳のスキャンデータから，\
-以下のフォーマットで単語帳情報を抽出してJSON形式で出力してください．\
-なお単語帳の1ページには複数の単語が含まれています．
-なお，一番最初の階層は "flashcards" としてください．
-フォーマット（１単語あたり）:
-[
-  {
-    "no": "必須．単語番号．画像左の左上に記載されている",
-    "word": "必須．画像左に含まれる英単語",
-    "word_type": "必須．品詞略．画像左の日本語訳の左側に記載されている",
-    "meaning": "必須．画像左に含まれる日本語訳．赤字で記載されている",
-    "pronunciation": "画像左に含まれる発音記号．画像左の英単語の右側に記載されている",
-    "onepoint": "画像左に含まれるワンポイントアドバイス．存在しない場合は空白文字列．！アイコンの右側に記載されている",
-    "totteoki": "画像左に含まれるとっておきポイント．存在しない場合は空白文字列．猫アイコンの右側に記載されている"
-    "syntax": "画像左に含まれる構文情報．存在しない場合は空白文字列．「構」のアイコンの右側に記載されている",
-    "collocation": "画像左に含まれるコロケーション．存在しない場合は空白文字列．「コ」のアイコンの右側に記載されている"
-    "idiom": "画像左に含まれるイディオム情報．存在しない場合は空白文字列．「イ」のアイコンの右側に記載されている"
-    "derivative": "画像左に含まれる派生語情報．存在しない場合は空白文字列．「派」のアイコンの右側に記載されている"
-    "similar_word": "画像左に含まれる類義語情報．存在しない場合は空白文字列．「類」のアイコンの右側に記載されている"
-    "antinym": "画像左に含まれる反意語情報．存在しない場合は空白文字列．「反」のアイコンの右側に記載されている"
-    "related_word": "画像左に含まれる関連語情報．存在しない場合は空白文字列．「関」のアイコンの右側に記載されている"
-    "example_sentence": "必須．画像右に含まれる例文情報．赤字箇所は英単語に対応しており，強調するために*で囲う．"
-    "example_sentence_meaning": "必須．画像右に含まれる例文の和訳情報．下線部が例文に対応しており，強調するために*で囲う．"
-  },
-    ...
-]
-"""
-    column = [
-        "no",
-        "word",
-        "word_type",
-        "meaning",
-        "pronunciation",
-        "onepoint",
-        "totteoki",
-        "syntax",
-        "collocation",
-        "idiom",
-        "derivative",
-        "similar_word",
-        "antinym",
-        "related_word",
-        "example_sentence",
-        "example_sentence_meaning",
-    ]
+    initialdir = os.getcwd() + "../prompts"
+    config_path = filedialog.askopenfilename(
+        title="Select flashcard config JSON",
+        initialdir=initialdir,
+        filetypes=[("JSON Files", "*.json")],
+    )
+    config_filename = os.path.basename(config_path)
+
+    if not config_path:
+        print("[INFO]\tNo config selected. Exiting...")
+        exit(0)
+
+    print(f"[INFO]\tSelected config: {config_filename}")
+
+    cfg = ChatGPT.load_config_json(config_path)
+    book = cfg["book"]
+    part = cfg["part"]
+    prompt = cfg["prompt"]
+    columns = cfg["columns"]
 
     print("[INFO]\tSetting flashcard information...")
     chat_gpt.set_flashcard_info(book=book, part=part, prompt=prompt)
 
     time_start = time.time()
 
-    extracted_data = pd.DataFrame(columns=column)
+    extracted_data = pd.DataFrame(columns=columns)
     output_csv = "extracted_flashcards.csv"
     output_dir = os.path.dirname(images_path[0])
 
