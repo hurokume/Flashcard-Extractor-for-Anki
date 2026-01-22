@@ -5,7 +5,7 @@ from openai import OpenAI
 
 class ChatGPT:
 
-    def __init__(self, api_key: str, model: str = "gpt-5-nano") -> None:
+    def __init__(self, api_key: str, model: str = "gpt-5-mini") -> None:
 
         self.client = OpenAI(api_key=api_key)
         self.model = model
