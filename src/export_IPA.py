@@ -1,5 +1,4 @@
 import os
-import time
 from tkinter import filedialog
 
 import pandas as pd
@@ -54,7 +53,7 @@ if __name__ == "__main__":
             print(f"[ERROR]\tError processing word '{word}': {e}")
             ipa.append("")
 
-        print(f"[INFO]\tProcessed {i+1}/{len(words)}: '{word}' -> '{ipa[-1]}'")
+        print(f"[INFO]\tProcessed {i + 1}/{len(words)}: '{word}' -> '{ipa[-1]}'")
 
         i += 1
 

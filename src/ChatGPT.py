@@ -121,7 +121,8 @@ class ChatGPT:
                         "Return ONLY a single IPA transcription for the given English word, "
                         "wrapped in slashes like /.../. "
                         "No explanations, no extra text. "
-                        "If there are multiple pronunciations, choose the most common one in General American English."
+                        "If there are multiple pronunciations, choose the most common one "
+                        "in General American English."
                     ),
                 },
                 {"role": "user", "content": w},
