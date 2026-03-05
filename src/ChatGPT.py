@@ -97,4 +97,40 @@ class ChatGPT:
         )
 
         return usd * 158.16  # JPY conversion
-        return usd * 158.16  # JPY conversion
+
+    def ipa(self, word: str) -> str:
+        """
+        Convert an English word to an IPA string (e.g., "/həˈloʊ/").
+
+        Notes:
+            - This is a simple helper that assumes the input is an English single word.
+            - For ambiguous words, it returns the most common pronunciation.
+        """
+        if not isinstance(word, str) or not word.strip():
+            raise ValueError("word must be a non-empty string")
+
+        w = word.strip()
+
+        response = self.client.responses.create(
+            model=self.model,
+            input=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are an expert phonetician. "
+                        "Return ONLY a single IPA transcription for the given English word, "
+                        "wrapped in slashes like /.../. "
+                        "No explanations, no extra text. "
+                        "If there are multiple pronunciations, choose the most common one in General American English."
+                    ),
+                },
+                {"role": "user", "content": w},
+            ],
+        )
+
+        ipa_text = (getattr(response, "output_text", "") or "").strip()
+
+        if not ipa_text:
+            raise RuntimeError("Failed to generate IPA (empty response).")
+
+        return ipa_text
